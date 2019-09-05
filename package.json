@@ -2,6 +2,7 @@
 	"name": "specifichtmlpreviewer",
 	"displayName": "SpecificHtmlPreviewer",
 	"description": "Allows you to preview specific html element",
+	"repository": "https://github.com/gamcoh/specifichtmlpreviewer",
 	"publisher": "Gamcoh",
 	"icon": "images/specifichtmlpreviewer.png",
 	"version": "0.0.1",

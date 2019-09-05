@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 import { DOMParser, XMLSerializer } from 'xmldom';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -41,13 +43,45 @@ export function activate(context: vscode.ExtensionContext) {
 		const newHtml = htmlSplitted.join('\n');
 		var parser = new DOMParser();
 		const dom = parser.parseFromString(newHtml);
-		const element = dom.getElementById(id);
+		let element = dom.getElementById(id);
 		if (element === null) {
 			vscode.window.showErrorMessage('Error: can not find the current element');
 			return false;
 		}
 
-		panel.webview.html = new XMLSerializer().serializeToString(element);
+		const xmlSerializer = new XMLSerializer();
+		let finalHtml = xmlSerializer.serializeToString(element);
+
+		// take the styles of the file
+		const styles = dom.getElementsByTagName('style');
+		if (styles !== null) {
+			for (let index = 0; index < styles.length; index++) {
+				finalHtml += xmlSerializer.serializeToString(styles[index]);
+			}
+		}
+
+		// take the external styles of the files
+		const cssLinks = dom.getElementsByTagName('link');
+		if (cssLinks !== null) {
+			for (let index = 0; index < cssLinks.length; index++) {
+				const link = cssLinks[index];
+				const href = link.getAttribute('href');
+
+				if (href === null || !href.endsWith('.css')) {
+					continue;
+				}
+
+				const filepath = path.join(path.dirname(activeEditor.document.fileName), href);
+				const filecontent = fs.readFileSync(filepath);
+				if (!filecontent) {
+					continue;
+				}
+
+				finalHtml += `<style>${filecontent}</style>`;
+			}
+		}
+
+		panel.webview.html = finalHtml;
 	});
 	context.subscriptions.push(disposable);
 }
