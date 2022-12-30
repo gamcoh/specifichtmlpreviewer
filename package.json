@@ -45,7 +45,7 @@
 		"@types/vscode": "^1.38.0",
 		"@types/xmldom": "^0.1.29",
 		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
+		"mocha": "^10.2.0",
 		"tslint": "^5.12.1",
 		"typescript": "^3.3.1",
 		"vscode-test": "^1.0.0-next.0"
